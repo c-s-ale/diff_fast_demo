@@ -1,0 +1,7 @@
+diffusers
+fastapi
+numpy
+matplotlib
+torch
+uvicorn
+transformers
