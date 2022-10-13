@@ -18,11 +18,7 @@
 
     ```git lfs install```
 
-4. Now you can create a new directory in your repository called: `models` with a command like:
-
-    ```mkdir models```
-
-5. You'll want to `cd models`
+5. You'll want to navigate to the `models` directory in your Terminal
 
 6. The next step will prompt your to log-into your Hugging Face account, and will take quite some time! (You need to download the 4GB of model checkpoint!)
 
