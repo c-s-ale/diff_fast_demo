@@ -20,7 +20,7 @@
 
 5. You'll want to navigate to the `models` directory in your Terminal
 
-6. The next step will prompt your to log-into your Hugging Face account, and will take quite some time! (You need to download the 4GB of model checkpoint!)
+6. The next step will prompt you to log-into your Hugging Face account, and will take quite some time! (You need to download the 4GB of model checkpoint!)
 
     ```git clone https://huggingface.co/CompVis/stable-diffusion-v1-4```
 
