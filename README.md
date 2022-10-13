@@ -23,15 +23,23 @@
 6. The next step will prompt you to log-into your Hugging Face account, and will take quite some time! (You need to download the 4GB of model checkpoint!)
 
     ```git clone https://huggingface.co/CompVis/stable-diffusion-v1-4```
+    
+7. Make sure you're in the root directory of the `diff_fast_demo` repo, using something like: 
 
-7. You should be good, from this point, to build, and run the Dockerfile using the command:
+    ```cd ..```
+
+8. You should be good, from this point, to build, and run the Dockerfile using the command:
 
     ```docker build -t stable_diff_cpu .```
 
-8. Then:
+9. Then:
 
     ```docker run --rm -p 5000:5000 stable_diff_cpu```
 
 Inference will take some time, since it's using CPU - but you'll be good to go after these steps!
+
+Make sure you remove the image once you're done playing with it! It's a biggun!
+
+```docker image rm stable_diff_cpu```
 
 
