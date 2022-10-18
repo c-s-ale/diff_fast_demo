@@ -7,7 +7,7 @@
     </details>
 
     <details><summary>Install on Mac</summary>
-    https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
+    Follow [these](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=mac) instructions on Mac, if you have the M1 chip - you may not find success with the `brew` option!
     </details>
 
     <details><summary>Install on WSL2</summary>
