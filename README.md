@@ -3,11 +3,15 @@
 2. You'll need to ensure you have `git-lfs`: 
 
     <details><summary>Install on Linux</summary>
+    
     ```sudo apt install git-lfs```
+    
     </details>
 
     <details><summary>Install on Mac</summary>
-    https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
+    
+    Follow [these](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=mac) instructions on Mac, if you have the M1 chip - you may not find success with the `brew` option!
+    
     </details>
 
     <details><summary>Install on WSL2</summary>
@@ -18,24 +22,28 @@
 
     ```git lfs install```
 
-4. Now you can create a new directory in your repository called: `models` with a command like:
+5. You'll want to navigate to the `models` directory in your Terminal
 
-    ```mkdir models```
-
-5. You'll want to `cd models`
-
-6. The next step will prompt your to log-into your Hugging Face account, and will take quite some time! (You need to download the 4GB of model checkpoint!)
+6. The next step will prompt you to log-into your Hugging Face account, and will take quite some time! (You need to download the 4GB of model checkpoint!)
 
     ```git clone https://huggingface.co/CompVis/stable-diffusion-v1-4```
+    
+7. Make sure you're in the root directory of the `diff_fast_demo` repo, using something like: 
 
-7. You should be good, from this point, to build, and run the Dockerfile using the command:
+    ```cd ..```
+
+8. You should be good, from this point, to build, and run the Dockerfile using the command:
 
     ```docker build -t stable_diff_cpu .```
 
-8. Then:
+9. Then:
 
     ```docker run --rm -p 5000:5000 stable_diff_cpu```
 
 Inference will take some time, since it's using CPU - but you'll be good to go after these steps!
+
+Make sure you remove the image once you're done playing with it! It's a biggun!
+
+```docker image rm stable_diff_cpu```
 
 
