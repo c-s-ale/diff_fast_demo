@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10-slim
 
 COPY requirements.txt /tmp/requirements.txt
 
@@ -8,7 +8,7 @@ RUN rm /tmp/requirements.txt
 
 COPY /app /app
 
-COPY /models /models
+COPY /model /model
 
 WORKDIR /app
 

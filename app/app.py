@@ -1,23 +1,24 @@
 # import fastapi
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from starlette.responses import StreamingResponse
-from diffusers import StableDiffusionPipeline
-import io
-from matplotlib.pyplot import imsave
+from diffusers import (
+    StableDiffusionPipeline,
+    StableDiffusionImg2ImgPipeline
+)
+from PIL import Image
 import numpy as np
+from torch import autocast
+import uvicorn
+import cv2
+import io
+import torch
 
 # instantiate the app
 app = FastAPI()
 
-# run on startup
-@app.on_event("startup")
-async def startup_event():
-    print("Starting up...")
-    # load the model
-    global pipe
-    pipe = StableDiffusionPipeline.from_pretrained("../models/stable-diffusion-v1-4")
-    pipe = pipe.to("cpu")
-    print('Started!')
+# cuda or cpu config
+def get_device():
+    return "cuda" if torch.cuda.is_available() else "cpu"
 
 # create a route
 @app.get("/")
@@ -27,10 +28,55 @@ def index():
 # create a text2img route
 @app.post("/text2img")
 def text2img(text: str):
-    # generate an image
-    img = pipe(text).images[0]
+    device = get_device()
+
+    text2img_pipe = StableDiffusionPipeline.from_pretrained("model")
+    text2img_pipe.to(device)
+
+    with autocast(device):
+        img = text2img_pipe(text).images[0]
+
     img = np.array(img)
-    buffer = io.BytesIO()
-    imsave(buffer, img)
-    buffer.seek(0)
-    return StreamingResponse(buffer, media_type="image/png")
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    res, img = cv2.imencode(".png", img)
+
+    del text2img_pipe
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return StreamingResponse(io.BytesIO(img.tobytes()), media_type="image/png")
+
+# create an img2img route
+@app.post("/img2img")
+def img2img(strength: int, prompt: str, img: UploadFile = File(...)):
+    device = get_device()
+    img2img_pipe = StableDiffusionImg2ImgPipeline.from_pretrained("model")
+    img2img_pipe.to(device)
+
+    img = Image.open(img.file).convert("RGB")
+    init_img = img.resize((768, 512))
+
+    strength = strength / 100
+
+    if strength > 1:
+        strength = 1
+    if strength < 0:
+        strength = 0
+
+    # generate an image
+    with autocast(device):
+        img = img2img_pipe(prompt, init_img, strength=strength).images[0]
+
+    img = np.array(img)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    res, img = cv2.imencode(".png", img)
+
+    del img2img_pipe
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return StreamingResponse(io.BytesIO(img.tobytes()), media_type="image/png")
+
+# run the app
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
