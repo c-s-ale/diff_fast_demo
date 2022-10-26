@@ -18,7 +18,12 @@ app = FastAPI()
 
 # cuda or cpu config
 def get_device():
-    return "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.cuda.is_available():
+        print('cuda is available')
+        return torch.device('cuda')
+    else:
+        print('cuda is not available')
+        return torch.device('cpu')
 
 # create a route
 @app.get("/")
@@ -30,11 +35,10 @@ def index():
 def text2img(text: str):
     device = get_device()
 
-    text2img_pipe = StableDiffusionPipeline.from_pretrained("model")
+    text2img_pipe = StableDiffusionPipeline.from_pretrained("../model")
     text2img_pipe.to(device)
 
-    with autocast(device):
-        img = text2img_pipe(text).images[0]
+    img = text2img_pipe(text).images[0]
 
     img = np.array(img)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -50,7 +54,7 @@ def text2img(text: str):
 @app.post("/img2img")
 def img2img(strength: int, prompt: str, img: UploadFile = File(...)):
     device = get_device()
-    img2img_pipe = StableDiffusionImg2ImgPipeline.from_pretrained("model")
+    img2img_pipe = StableDiffusionImg2ImgPipeline.from_pretrained("../model")
     img2img_pipe.to(device)
 
     img = Image.open(img.file).convert("RGB")
@@ -64,8 +68,7 @@ def img2img(strength: int, prompt: str, img: UploadFile = File(...)):
         strength = 0
 
     # generate an image
-    with autocast(device):
-        img = img2img_pipe(prompt, init_img, strength=strength).images[0]
+    img = img2img_pipe(prompt, init_img, strength=strength).images[0]
 
     img = np.array(img)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
