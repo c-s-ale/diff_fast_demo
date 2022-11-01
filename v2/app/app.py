@@ -52,7 +52,7 @@ def text2img(text: str):
 
 # create an img2img route
 @app.post("/img2img")
-def img2img(strength: int, prompt: str, img: UploadFile = File(...)):
+def img2img(prompt: str, img: UploadFile = File(...)):
     device = get_device()
     img2img_pipe = StableDiffusionImg2ImgPipeline.from_pretrained("../model")
     img2img_pipe.to(device)
@@ -60,18 +60,19 @@ def img2img(strength: int, prompt: str, img: UploadFile = File(...)):
     img = Image.open(img.file).convert("RGB")
     init_img = img.resize((768, 512))
 
-    strength = strength / 100
-
-    if strength > 1:
-        strength = 1
-    if strength < 0:
-        strength = 0
-
     # generate an image
-    img = img2img_pipe(prompt, init_img, strength=strength).images[0]
+    img = img2img_pipe(prompt, init_img).images[0]
 
     img = np.array(img)
+
+    # in the presentation the following line will be mising - 
+    # you can say something like: "hmmm, np.arrays are in RGB format, but cv2 needs BGR"
+    # did he test this shit, even!?
+    # 
+    # 
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    # end of skit lines
+
     res, img = cv2.imencode(".png", img)
 
     del img2img_pipe
